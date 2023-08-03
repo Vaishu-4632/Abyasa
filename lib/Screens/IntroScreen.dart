@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:abhyasa/Screens/Intro1.dart';
 import 'package:abhyasa/Screens/Intro2.dart';
 import 'package:abhyasa/Screens/NavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:http/http.dart' as http;
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -12,9 +15,11 @@ class IntroScreen extends StatefulWidget {
 }
 
 class _IntroScreenState extends State<IntroScreen> {
+  
   final pageController = PageController();
   bool isLastPage = false;
   int currentPage = 0;
+  
   List<Gradient> colors = [const LinearGradient(colors: [ Color.fromRGBO(13, 152, 186, 1.0),
                                 Color.fromRGBO(0, 135, 189, 1.0),
                                 Color.fromRGBO(0, 103, 165, 1.0),
@@ -22,6 +27,8 @@ class _IntroScreenState extends State<IntroScreen> {
                                 Color.fromRGBO(198, 178, 211, 1),
                                 Color.fromRGBO(189, 156, 211, 1),
                                       Color.fromRGBO(148, 111, 173, 1),])];
+                                      @override
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

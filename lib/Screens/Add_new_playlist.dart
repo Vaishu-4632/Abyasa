@@ -1,15 +1,37 @@
+import 'dart:convert';
+
 import 'package:abhyasa/Widgets/reusable.dart';
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:http/http.dart' as http;
+import 'package:abhyasa/Model/model.dart';
+
 
 class AddNewPlaylist extends StatefulWidget {
   const AddNewPlaylist({super.key});
 
   @override
   State<AddNewPlaylist> createState() => _AddNewPlaylistState();
+
 }
 
 class _AddNewPlaylistState extends State<AddNewPlaylist> {
+  List meditationNames = [];
+  List meditationDuration = [];
+  List meditationDownloadNames = [];
+  List meditationDownloadDuration = [];
+  List asanaDownloadNames = [];
+  List asanaDownloadDuration = [];
+  List chantDownloadNames = [];
+  List chantDownloadDuration = [];
+  List kriyaDownloadNames = [];
+  List kriyaDownloadDuration = [];
+  List asanaNames = [];
+  List asanaDuration = [];
+  List chantNames = [];
+  List chantDuration = [];
+  List kriyaNames = [];
+  List kriyaDuration = [];
+  List durationsInMinutes = [];
   bool isPressed = false;
   bool isPadmasadhana = true;
   bool isSanyam = true;
@@ -29,13 +51,129 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
       bool isBacktosource = true;
 
 
-  TabController? _controller;
+  // TabController? _controller;
   // final OnAudioQuery _audioQuery = OnAudioQuery();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // requestStoragePermission();
+     fetchFreeMeditationData();
+     fetchDownloadMeditationData();
+     fetchFreeAsanaData();
+     fetchDownloadAsanaData();
+     fetchchantsData();
+     fetchkriyaData();
+  }
+  var varHeader = {
+  'access-token': 'TXQpzj3rcmbtWh5SBB_yzQ',
+  'client': 'dc-_fknRkcARh3FwbANuxQ',
+  'uid': 'gurkaran.bambhrah@gmail.com',
+  };
+  
+
+  Future fetchFreeMeditationData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+       final meditationData = data.where((item) => item['type'] == 'Meditation' && item['price_in_inr'] == '₹ 0').toList();
+      // final meditationData = data.where((item) => item['type'] == 'Meditation').toList();
+      // final meditationPriceInInr = data.where((item) => item['price_in_inr'] == '₹ 0').toList();
+        setState(() {
+        meditationNames = meditationData.map((item) => item['name']).toList();
+        meditationDuration = meditationData.map((item) => item['duration']).toList();
+      });
+    }
+  }
+  Future fetchDownloadMeditationData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final meditationDownloadData = data.where((item) => item['type'] == 'Meditation' && item['price_in_inr'] != '₹ 0').toList();
+      // final meditationDownloadData = data.where((item) => item['type'] == 'Meditation').toList();
+      // final meditationPriceInInr = data.where((item) => item['price_in_inr'] != '₹ 0').toList();
+        setState(() {
+        meditationDownloadNames = meditationDownloadData.map((item) => item['name']).toList();
+        meditationDownloadDuration = meditationDownloadData.map((item) => int.tryParse(item['duration']) != null ? Duration(seconds: int.parse(item[ 'duration'],radix: 10)).inMinutes.toString() : null).toList();
+      });
+    }
+  }
+  Future fetchFreeAsanaData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) { 
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final asanaData = data.where((item) => item['type'] == 'Asana' && item['price_in_inr'] == '₹ 0').toList();
+      setState(() {
+        asanaNames = asanaData.map((item) => item['name']).toList();
+        asanaDuration = asanaData.map((item) => item['duration']).toList();
+        
+      });
+    }
+  }
+  Future fetchDownloadAsanaData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final asanaDownloadData = data.where((item) => item['type'] == 'Asana' && item['price_in_inr'] != '₹ 0').toList();
+      setState(() {
+        asanaDownloadNames = asanaDownloadData.map((item) => item['name']).toList();
+        asanaDownloadDuration = asanaDownloadData.map((item) => item['duration']).toList();
+      });
+    }
+  }
+  Future fetchchantsData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final chantData = data.where((item) => item['type'] == 'Chant' && item['price_in_inr'] == '₹ 0').toList();
+      // final chantData = data.where((item) => item['type'] == 'Chant').toList();
+      setState(() {
+        chantNames = chantData.map((item) => item['name']).toList();
+      chantDuration = chantData.map((item) => item['duration']).toList();
+      });
+    }
+  }
+  Future fetchDownloadchantsData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final chantDownloadData = data.where((item) => item['type'] == 'Chant' && item['price_in_inr'] != '₹ 0').toList();
+      // final chantData = data.where((item) => item['type'] == 'Chant').toList();
+      setState(() {
+        chantDownloadNames = chantDownloadData.map((item) => item['name']).toList();
+      chantDownloadDuration = chantDownloadData.map((item) => item['duration']).toList();
+      });
+    }
+  }
+  Future fetchkriyaData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final kriyaData = data.where((item) => item['type'] == 'ArtExcel' && item['price_in_inr'] == '₹ 0').toList();
+      // final kriyaData = data.where((item) => item['type'] == 'ArtExcel').toList();
+      setState(() {
+        kriyaNames = kriyaData.map((item) => item['name']).toList();
+      kriyaDuration = kriyaData.map((item) => item['duration']).toList();
+      });
+    }
+  }
+  Future fetchDownloadkriyaData() async {
+    final response = await http.get(Uri.parse('https://dev.abhyaasa.com/v1/general_audios.json?type=GeneralAudio&payment_required=true,'),headers: varHeader);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final data = jsonData['data'];
+      final kriyaDownloadData = data.where((item) => item['type'] == 'ArtExcel' && item['price_in_inr'] != '₹ 0').toList();
+      // final kriyaData = data.where((item) => item['type'] == 'ArtExcel').toList();
+      setState(() {
+        kriyaDownloadNames = kriyaDownloadData.map((item) => item['name']).toList();
+      kriyaDownloadDuration = kriyaDownloadData.map((item) => item['duration']).toList();
+      });
+    }
   }
   TabBar get _tabBar => const TabBar(
     indicatorColor: Colors.white,
@@ -56,6 +194,8 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
           ),
         ],
       );
+
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -121,58 +261,107 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
           ],
         )
             ),
-            child:  SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 25,),
-                   Container(
-                    alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.only(left: 20),
-                    child: const Text('On device & ready to play', style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w700),textAlign: TextAlign.left,),
+            // Asana tab
+              child: SingleChildScrollView(
+                child:
+                    Container(
+               height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,     
+                             margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 20),
+                      child: Column(
+                        children:<Widget> [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('On device and ready to play',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: asanaNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(asanaNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(asanaDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              SizedBox(height: 10,),
+                              Divider(height: 2, color: Colors.white,),
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.add_circle_outline_rounded,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          SizedBox(height: 35,),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Download New Asanas',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          SizedBox(height: 20,),
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: asanaDownloadNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(asanaDownloadNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(asanaDownloadDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              Divider(height: 2, color: Colors.white,)
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.cloud_download,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          
+                        ],
+                      ),
+                          
+                        
+                      
                     ),
-                    // SizedBox(height: 20,),
-                     
-                   dummyPlaylist('Sanyam',  '30.18 mins', (){
-                      setState(() {
-                              isSanyam = !isSanyam;
-                            });
-                    }, Icon(isSanyam ? Icons.add_circle : Icons.check,color: Colors.white,)),   
-                    dummyPlaylist('Bogar Nadishodhan', '7.2 mins', (){
-                      setState(() {
-                              isBogar = !isBogar;
-                            });
-                    }, Icon(isBogar ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Shanti Mantra', '2 mins', (){
-                      setState(() {
-                              isShantimantra = !isShantimantra;
-                            });
-                    }, Icon(isShantimantra ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Warmup Stretches Hindi', '10.3 mins', (){
-                      setState(() {
-                              isWarmh = !isWarmh;
-                            });
-                    }, Icon(isWarmh ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Warmup Stretches English', '10.3 mins', (){
-                      setState(() {
-                              isWarmE = !isWarmE;
-                            });
-                    }, Icon(isWarmE ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Suryaa Namaskar', '4 mins', (){
-                      setState(() {
-                              isSurya = !isSurya;
-                            });
-                    }, Icon(isSurya ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Padma Sadhana', '32.67 mins', (){
-                      setState(() {
-                              ispadma = !ispadma;
-                            });
-                    }, Icon(ispadma ? Icons.add_circle : Icons.check,color: Colors.white,)),
-            
-                ],
+                 
+                  
+                
               ),
-            ),
+              
+            
+                
+            
 
-          ),
+          ), 
+          // Meditation Tab
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -188,69 +377,102 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
           ],
         )
             ),
-            child:  SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 25,),
-                   Container(
-                    alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.only(left: 20),
-                    child: const Text('On device & ready to play', style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w700),textAlign: TextAlign.left,),
+             child: SingleChildScrollView(
+                child:
+                    Container(
+               height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,     
+                             margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 20),
+                      child: Column(
+                        children:<Widget> [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('On device and ready to play',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: meditationNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(meditationNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(meditationDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              SizedBox(height: 10,),
+                              Divider(height: 2, color: Colors.white,),
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.add_circle_outline_rounded,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          SizedBox(height: 35,),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Download New Meditation',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          SizedBox(height: 20,),
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: meditationDownloadNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(meditationDownloadNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(meditationDownloadDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              Divider(height: 2, color: Colors.white,)
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.cloud_download,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          
+                        ],
+                      ),
+                          
+                        
+                      
                     ),
-                    // SizedBox(height: 20,),
-                     
-                   dummyPlaylist('Concentration_Pranayam_English',  '3.57 mins', (){
-                      setState(() {
-                              isConcentration = !isConcentration;
-                            });
-                    }, Icon(isConcentration ? Icons.add_circle : Icons.check,color: Colors.white,)),   
-                    dummyPlaylist('Hari Om', '22.67 mins', (){
-                      setState(() {
-                              isHariom = !isHariom;
-                            });
-                    }, Icon(isHariom ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Panchakosha', '16.93 mins', (){
-                      setState(() {
-                              isPanchakosha = !isPanchakosha;
-                            });
-                    }, Icon(isPanchakosha ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Silence', '10 mins', (){
-                      setState(() {
-                              isSilence = !isSilence;
-                            });
-                    }, Icon(isSilence ? Icons.add_circle : Icons.check,color: Colors.white,)),
-                    SizedBox(height: 20,),
-            Container(
-                    alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.only(left: 20),
-                    child: const Text('Download new Meditation', style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.w700),textAlign: TextAlign.left,),
-                    ),
-                    dummyPlaylist('Amanercer_del_Ser_Spanish', '15.68 mins', (){
-                      setState(() {
-                              isAmanercer = !isAmanercer;
-                            });
-                    }, Icon(isAmanercer ? Icons.cloud_download : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Atomo Molecula y Vida', '19.53 mins', (){
-                      setState(() {
-                              isAtomo = !isAtomo;
-                            });
-                    }, Icon(isAtomo ? Icons.cloud_download : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('AuraMeditation', '27.33 mins', (){
-                      setState(() {
-                              isAura = !isAura;
-                            });
-                    }, Icon(isAura ? Icons.cloud_download : Icons.check,color: Colors.white,)),
-                    dummyPlaylist('Back to the source', '6.8 mins', (){
-                      setState(() {
-                              isBacktosource = !isBacktosource;
-                            });
-                    }, Icon(isBacktosource ? Icons.cloud_download : Icons.check,color: Colors.white,)),
-                    
-                ],
+                 
+                  
+                
               ),
-            ),
-
+              
           ),
+          // Chant Tab
           Container(
             // height: MediaQuery.of(context).size.height,
             // width: MediaQuery.of(context).size.width,
@@ -268,8 +490,102 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
           ],
         )
             ),
+           child: SingleChildScrollView(
+                child:
+                    Container(
+               height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,     
+                             margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 20),
+                      child: Column(
+                        children:<Widget> [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('On device and ready to play',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: chantNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(chantNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(chantDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              SizedBox(height: 10,),
+                              Divider(height: 2, color: Colors.white,),
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.add_circle_outline_rounded,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          SizedBox(height: 35,),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Download New Chants',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          SizedBox(height: 20,),
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: chantDownloadNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(chantDownloadNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(chantDownloadDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              Divider(height: 2, color: Colors.white,)
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.cloud_download,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          
+                        ],
+                      ),
+                          
+                        
+                      
+                    ),
+                 
+                  
+                
+              ),
 
           ),
+          // Kriya Tab
           Container(
             // height: MediaQuery.of(context).size.height,
             // width: MediaQuery.of(context).size.width,
@@ -287,6 +603,100 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
           ],
         )
             ),
+            child: SingleChildScrollView(
+                child:
+                    Container(
+               height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,     
+                             margin: EdgeInsets.only(left: 20,right: 20,top: 20,bottom: 20),
+                      child: Column(
+                        children:<Widget> [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('On device and ready to play',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: kriyaNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(kriyaNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(kriyaDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              SizedBox(height: 10,),
+                              Divider(height: 2, color: Colors.white,),
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.add_circle_outline_rounded,color: Colors.white,)
+
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          SizedBox(height: 35,),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Download New Kriyas',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500,fontSize: 20),)),
+                          SizedBox(height: 20,),
+                             Expanded(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                    itemCount: kriyaDownloadNames.length,
+                                    itemBuilder: (context, index) {
+                                      return 
+                                       Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                         children: [
+                                           Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                
+                              Padding(
+                                padding: const EdgeInsets.only(top: 25,bottom: 3),
+                                child: Text(kriyaDownloadNames[index],style: TextStyle(color: const Color.fromARGB(255, 243, 240, 240),fontSize: 18),),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(kriyaDownloadDuration[index],style: TextStyle(color: Colors.white60),),
+                              ),
+                              Divider(height: 2, color: Colors.white,)
+                              ],
+                                            
+                                      ),
+                                      Icon(Icons.cloud_download,color: Colors.white,)
+                                         ],
+                                       );
+                                    },
+                                  ),
+                            ),
+                          
+                        ],
+                      ),
+                          
+                        
+                      
+                    ),
+                 
+                  
+                
+              ),
 
           )
         ]
@@ -329,3 +739,39 @@ class _AddNewPlaylistState extends State<AddNewPlaylist> {
   //     });
   // }
 }
+     //  MeditationListScreen(),
+                  //  dummyPlaylist('Sanyam',  '30.18 mins', (){
+                  //     setState(() {
+                  //             isSanyam = !isSanyam; 
+                  //           });
+                  //   }, Icon(isSanyam ? Icons.add_circle : Icons.check,color: Colors.white,)),   
+                  //   dummyPlaylist('Bogar Nadishodhan', '7.2 mins', (){
+                  //     setState(() {
+                  //             isBogar = !isBogar;
+                  //           });
+                  //   }, Icon(isBogar ? Icons.add_circle : Icons.check,color: Colors.white,)),
+                  //   dummyPlaylist('Shanti Mantra', '2 mins', (){
+                  //     setState(() {
+                  //             isShantimantra = !isShantimantra;
+                  //           });
+                  //   }, Icon(isShantimantra ? Icons.add_circle : Icons.check,color: Colors.white,)),
+                  //   dummyPlaylist('Warmup Stretches Hindi', '10.3 mins', (){
+                  //     setState(() {
+                  //             isWarmh = !isWarmh;
+                  //           });
+                  //   }, Icon(isWarmh ? Icons.add_circle : Icons.check,color: Colors.white,)),
+                  //   dummyPlaylist('Warmup Stretches English', '10.3 mins', (){
+                  //     setState(() {
+                  //             isWarmE = !isWarmE;
+                  //           });
+                  //   }, Icon(isWarmE ? Icons.add_circle : Icons.check,color: Colors.white,)),
+                  //   dummyPlaylist('Suryaa Namaskar', '4 mins', (){
+                  //     setState(() {
+                  //             isSurya = !isSurya;
+                  //           });
+                  //   }, Icon(isSurya ? Icons.add_circle : Icons.check,color: Colors.white,)),
+                  //   dummyPlaylist('Padma Sadhana', '32.67 mins', (){
+                  //     setState(() {
+                  //             ispadma = !ispadma;
+                  //           });
+                  //   }, Icon(ispadma ? Icons.add_circle : Icons.check,color: Colors.white,)),
