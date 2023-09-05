@@ -3,6 +3,7 @@ class PlayList {
   List<Data>? data;
   String? message;
 
+
   PlayList({this.status, this.data, this.message});
 
   PlayList.fromJson(Map<String, dynamic> json) {
@@ -31,9 +32,10 @@ class Data {
   int? id;
   String? type;
   String? name;
-  String? duration;
+  double? duration;
   String? price_in_inr;
   String? asset_url;
+  bool? isChecked;
   // String? price_in_dollar;
 
   Data(
@@ -43,6 +45,7 @@ class Data {
       this.duration,
       this.price_in_inr,
       this.asset_url,
+      this.isChecked =false,
       // this.price_in_dollar
       });
 
@@ -67,6 +70,14 @@ class Data {
     // data['price_in_dollar'] = price_in_dollar;
     return data;
   }
+  // String getFormattedDuration() {
+  //   int minutes = duration! ~/ 60;
+  //   double seconds = duration! % 60;
+  //   String formattedMinutes = minutes.toString().padLeft(2, '0');
+  //   String formattedSeconds = seconds.toString().padLeft(2, '0');
+  //   return '$formattedMinutes:$formattedSeconds';
+  // }
+
 }
 
 

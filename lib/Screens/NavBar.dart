@@ -1,5 +1,7 @@
 import 'package:abhyasa/Screens/Add_new_playlist.dart';
 import 'package:abhyasa/Screens/IntroScreen.dart';
+import 'package:abhyasa/Screens/New_playlist.dart';
+import 'package:abhyasa/Screens/PlaylisPage.dart';
 import 'package:abhyasa/Widgets/reusable.dart';
 import 'package:flutter/material.dart';
 
@@ -49,8 +51,15 @@ class NavBar extends StatelessWidget {
                                list(Icons.add_circle, 'New Playlist', 
           (){ Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const AddNewPlaylist(),),);}
-         )
+          builder: (context) => const NewPlaylist(),),);}
+         ),
+         list(Icons.home, "All Playlist" , (){
+                        Navigator.of(context).push(
+                             MaterialPageRoute(
+                               builder: (context) =>  PlaylistScreen()),);
+                               
+                              }),
+
                      ],
                    ),
                  ),

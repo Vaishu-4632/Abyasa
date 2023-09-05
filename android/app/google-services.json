@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "29304498343",
+    "project_id": "abhyasa-app",
+    "storage_bucket": "abhyasa-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29304498343:android:607119421edff1a2259382",
+        "android_client_info": {
+          "package_name": "com.example.abhyasa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "29304498343-2b4tulan596keeunheqot5odq0ge5h1c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi3WXcfs2CbnHIgQ16iDkKbn2f-SBe-G8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "29304498343-2b4tulan596keeunheqot5odq0ge5h1c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

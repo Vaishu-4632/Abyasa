@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:abhyasa/Screens/Intro1.dart';
 import 'package:abhyasa/Screens/Intro2.dart';
 import 'package:abhyasa/Screens/NavBar.dart';
+import 'package:abhyasa/Screens/create_palylist.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:http/http.dart' as http;
@@ -41,8 +42,9 @@ class _IntroScreenState extends State<IntroScreen> {
         },
         controller: pageController,
         children: const [
-           Intro1(),
-          Intro2(),
+          CreatePlaylist()
+          //  Intro1(),
+          // Intro2(),
         ],
         
       ),
@@ -52,6 +54,7 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
         height: 80,
         decoration:  BoxDecoration(
+          // color: Colors.transparent,
           gradient: colors[currentPage]
         ),
 
